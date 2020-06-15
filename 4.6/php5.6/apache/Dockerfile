@@ -20,19 +20,3 @@ RUN { \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 VOLUME /var/www/html
-
-ENV WORDPRESS_VERSION 4.6.19
-ENV WORDPRESS_SHA1 88827509330e4c8814e1620c6097e7edda3e8283
-
-# upstream tarballs include ./wordpress/ so this gives us /usr/src/wordpress
-RUN curl -o wordpress.tar.gz -SL https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz \
-	&& echo "$WORDPRESS_SHA1 *wordpress.tar.gz" | sha1sum -c - \
-	&& tar -xzf wordpress.tar.gz -C /usr/src/ \
-	&& rm wordpress.tar.gz \
-	&& chown -R www-data:www-data /usr/src/wordpress
-
-COPY docker-entrypoint.sh /entrypoint.sh
-
-# grr, ENTRYPOINT resets CMD now
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
