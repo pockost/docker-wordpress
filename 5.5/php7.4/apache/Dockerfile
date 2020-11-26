@@ -12,4 +12,3 @@ COPY docker-configure-session /docker-entrypoint.d
 
 # HTTP expires headers
 COPY expires.conf /etc/apache2/conf-enabled/expires.conf
-
