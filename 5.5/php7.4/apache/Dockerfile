@@ -13,3 +13,5 @@ COPY docker-configure-session /docker-entrypoint.d
 # HTTP expires headers
 COPY expires.conf /etc/apache2/conf-enabled/expires.conf
 
+# PHP upload size
+echo -n "upload_max_filesize = 64M\npost_max_size = 128M" > /usr/local/etc/php/conf.d/upload.ini
