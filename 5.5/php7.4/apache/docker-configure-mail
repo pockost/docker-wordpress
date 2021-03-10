@@ -10,6 +10,5 @@ port ${PHP_SMTP_PORT}
 logfile -
 auto_from
 EOF
-  chmod 600 /etc/msmtprc
   echo "sendmail_path = /usr/bin/msmtp -t" > /usr/local/etc/php/conf.d/sendmail.ini
 fi
