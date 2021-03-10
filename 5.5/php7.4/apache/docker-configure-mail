@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ "${PHP_SMTP_HOST}" ]
+then
+  echo "PHP email will be forwarded to $PHP_SMTP_HOST:$PHP_SMTP_PORT smtp host"
+  cat <<EOF > /etc/msmtprc
+account default
+host ${PHP_SMTP_HOST}
+port ${PHP_SMTP_PORT}
+logfile -
+auto_from
+EOF
+  chmod 600 /etc/msmtprc
+  echo "sendmail_path = /usr/bin/msmtp -t" > /usr/local/etc/php/conf.d/sendmail.ini
+fi
