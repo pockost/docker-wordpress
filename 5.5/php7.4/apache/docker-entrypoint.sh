@@ -300,6 +300,10 @@ EOPHP
 		fi
 	fi
 
+	if [ ${PHP_MEMORY_LIMIT+x} ]; then
+		echo "memory_limit = ${PHP_MEMORY_LIMIT}" >> /usr/local/etc/php/php.ini
+	fi
+
 	# now that we're definitely done writing configuration, let's clear out the relevant envrionment variables (so that stray "phpinfo()" calls don't leak secrets from our code)
 	for e in "${envs[@]}"; do
 		unset "$e"
