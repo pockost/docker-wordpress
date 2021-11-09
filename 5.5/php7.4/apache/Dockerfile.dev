@@ -39,6 +39,7 @@ RUN set -ex \
       git \
       libcurl4-openssl-dev \
       libssl-dev \
+      libz-dev \
       libboost-dev \
     && echo "--- clone grpc ---" \
     && git clone --depth 1 -b ${GRPC_RELEASE_TAG} https://github.com/grpc/grpc /var/local/git/grpc \
