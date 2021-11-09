@@ -1,0 +1,65 @@
+# vim: set syntax=dockerfile:
+FROM wordpress:5.5-php7.4-apache
+
+ENV PHP_SMTP_PORT 25
+
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y \
+    msmtp \
+ && rm -rf /var/lib/apt/lists/* \
+ && pecl install redis && docker-php-ext-enable redis \
+ && a2enmod headers
+
+# Add ability to inject command on container startup
+RUN mkdir /docker-entrypoint.d
+COPY docker-entrypoint.sh /usr/local/bin/
+
+# Session management with env var
+COPY docker-configure-session /docker-entrypoint.d
+
+# Mail direct sending (mail function)
+COPY docker-configure-mail /docker-entrypoint.d
+
+# HTTP expires headers
+COPY expires.conf /etc/apache2/conf-enabled/expires.conf
+
+# PHP upload size
+RUN echo -n "upload_max_filesize = 64M\npost_max_size = 128M" > /usr/local/etc/php/conf.d/upload.ini
+
+# Add skywalking
+ENV GRPC_RELEASE_TAG v1.31.x
+ENV PROTOBUF_RELEASE_TAG 3.13.x
+ENV SKYAPM_PHP_SDK_RELEASE_TAG v4.2.0
+
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64
+ENV LD_RUN_PATH=$LD_RUN_PATH:/usr/local/lib:/usr/local/lib64
+RUN set -ex \
+    && apt-get update && apt-get install --no-install-recommends -y \
+      build-essential \
+      git \
+      libcurl4-openssl-dev \
+      libssl-dev \
+      libboost-dev \
+    && echo "--- clone grpc ---" \
+    && git clone --depth 1 -b ${GRPC_RELEASE_TAG} https://github.com/grpc/grpc /var/local/git/grpc \
+    && cd /var/local/git/grpc \
+    && git submodule update --init --recursive \
+    && echo "--- download cmake ---" \
+    && cd /var/local/git \
+    && curl -L -o cmake-3.19.1.tar.gz  https://github.com/Kitware/CMake/releases/download/v3.19.1/cmake-3.19.1.tar.gz \
+    && tar zxf cmake-3.19.1.tar.gz \
+    && cd cmake-3.19.1 && ./bootstrap && make -j$(nproc) && make install \
+    && echo "--- installing grpc ---" \
+    && cd /var/local/git/grpc \
+    && mkdir -p cmake/build && cd cmake/build && cmake ../.. \
+    && make -j$(nproc) \
+    && echo "--- installing skywalking php ---" \
+    && git clone -b ${SKYAPM_PHP_SDK_RELEASE_TAG} https://github.com/SkyAPM/SkyAPM-php-sdk.git /var/local/git/skywalking \
+    && cd /var/local/git/skywalking \
+    && phpize && ./configure --with-grpc=/var/local/git/grpc && make && make install \
+    && cp php.ini $PHP_INI_DIR/conf.d/ext-skywalking.ini \
+    && cd / \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -fr /var/local/git
+
+COPY docker-configure-skywalking /docker-entrypoint.d/docker-configure-skywalking
