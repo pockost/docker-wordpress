@@ -1,9 +1,7 @@
 #!/bin/sh
 
-grpc=$SW_OAP_ADDRESS
+grpc=${SW_OAP_ADDRESS}
 
-if [ ! $grpc ]; then
-    sed -i "s/127.0.0.1:11800/$grpc/g" $PHP_INI_DIR/conf.d/ext-skywalking.ini
-fi
+sed -i "s/127.0.0.1:11800/$grpc/g" $PHP_INI_DIR/conf.d/ext-skywalking.ini
 
 echo "skywalking oap address:" $grpc
