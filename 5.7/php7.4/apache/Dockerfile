@@ -4,8 +4,9 @@ ENV PHP_SMTP_PORT 25
 
 RUN apt-get update \
  && apt-get install --no-install-recommends -y \
-    msmtp \
+    msmtp libxml2-dev \
  && rm -rf /var/lib/apt/lists/* \
+ && docker-php-ext-install soap \
  && pecl install redis && docker-php-ext-enable redis \
  && a2enmod headers
 
