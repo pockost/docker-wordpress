@@ -20,6 +20,9 @@ COPY docker-configure-session /docker-entrypoint.d
 # Mail direct sending (mail function)
 COPY docker-configure-mail /docker-entrypoint.d
 
+# PHP Upload size
+COPY docker-configure-upload-size /docker-entrypoint.d
+
 # HTTP expires headers
 COPY expires.conf /etc/apache2/conf-enabled/expires.conf
 
