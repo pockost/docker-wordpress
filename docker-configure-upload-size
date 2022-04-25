@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ "${PHP_UPLOAD_SIZE}" ]
+then
+  echo "Set php upload size to ${PHP_UPLOAD_SIZE}"
+  sed -i "s/\(upload_max_filesize\W*=\W*\).*$/\1${PHP_UPLOAD_SIZE}/" /usr/local/etc/php/conf.d/upload.ini
+  sed -i "s/\(post_max_size\W*=\W*\).*$/\1${PHP_UPLOAD_SIZE}/" /usr/local/etc/php/conf.d/upload.ini
+fi
