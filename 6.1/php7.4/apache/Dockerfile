@@ -11,8 +11,7 @@ RUN apt-get update \
  && a2enmod headers
 
 # Add ability to inject command on container startup
-RUN mkdir /docker-entrypoint.d
-COPY docker-entrypoint.sh /usr/local/bin/
+RUN mkdir /docker-entrypoint.d && sed -i '/^exec "$@"/i DIR=/docker-entrypoint.d && if [ -d "$DIR" ]; then /bin/run-parts "$DIR"; fi' /usr/local/bin/docker-entrypoint.sh
 
 # Session management with env var
 COPY docker-configure-session /docker-entrypoint.d
