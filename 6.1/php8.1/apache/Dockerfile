@@ -19,14 +19,11 @@ COPY docker-configure-session /docker-entrypoint.d
 # Mail direct sending (mail function)
 COPY docker-configure-mail /docker-entrypoint.d
 
-# PHP Upload size
-COPY docker-configure-upload-size /docker-entrypoint.d
+# PHP ini configuration
+COPY docker-php-ini-configure /docker-entrypoint.d
 
 # HTTP expires headers
 COPY expires.conf /etc/apache2/conf-enabled/expires.conf
 
 # Apache log configuration
 COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
-
-# PHP upload size
-RUN printf "upload_max_filesize = 64M\npost_max_size = 128M" > /usr/local/etc/php/conf.d/upload.ini
