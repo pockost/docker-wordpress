@@ -20,3 +20,6 @@ COPY docker-configure-mail /docker-entrypoint.d
 
 # PHP ini configuration
 COPY docker-php-ini-configure /docker-entrypoint.d
+
+# HealthCheck script
+COPY php-fpm-healthcheck /usr/local/bin/php-fpm-healthcheck
